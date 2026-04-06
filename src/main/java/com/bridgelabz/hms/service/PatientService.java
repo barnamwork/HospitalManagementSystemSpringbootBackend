@@ -2,44 +2,39 @@ package com.bridgelabz.hms.service;
 
 import com.bridgelabz.hms.entity.Patient;
 import com.bridgelabz.hms.repository.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PatientService {
 
-    @Autowired
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
 
-    public Patient createPatient(Patient patient) {
-        return patientRepository.save(patient);
+    public PatientService(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
     }
 
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
 
+    public Patient addPatient(Patient patient) {
+        return patientRepository.save(patient);
+    }
+
     public Patient getPatientById(Long id) {
-        Optional<Patient> patient = patientRepository.findById(id);
-        return patient.orElse(null);
+        return patientRepository.findById(id).orElse(null);
     }
 
     public Patient updatePatient(Long id, Patient updatedPatient) {
-        Optional<Patient> existing = patientRepository.findById(id);
+        Patient existing = patientRepository.findById(id).orElse(null);
 
-        if (existing.isPresent()) {
-            Patient patient = existing.get();
-            patient.setName(updatedPatient.getName());
-            patient.setAge(updatedPatient.getAge());
-            patient.setGender(updatedPatient.getGender());
-            patient.setDisease(updatedPatient.getDisease());
-            patient.setAddress(updatedPatient.getAddress());
-            patient.setPhoneNumber(updatedPatient.getPhoneNumber());
-
-            return patientRepository.save(patient);
+        if (existing != null) {
+            existing.setName(updatedPatient.getName());
+            existing.setAge(updatedPatient.getAge());
+            existing.setDisease(updatedPatient.getDisease());
+            return patientRepository.save(existing);
         }
 
         return null;
@@ -47,6 +42,6 @@ public class PatientService {
 
     public String deletePatient(Long id) {
         patientRepository.deleteById(id);
-        return "Patient deleted successfully";
+        return "Patient deleted";
     }
 }

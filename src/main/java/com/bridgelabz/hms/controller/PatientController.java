@@ -1,7 +1,7 @@
 package com.bridgelabz.hms.controller;
 
 import com.bridgelabz.hms.entity.Patient;
-import com.bridgelabz.hms.repository.PatientRepository;
+import com.bridgelabz.hms.service.PatientService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,34 +10,40 @@ import java.util.List;
 @RequestMapping("/api/patient")
 public class PatientController {
 
-    private final PatientRepository patientRepository;
+    private final PatientService patientService;
 
-    public PatientController(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
     }
 
-    // ✅ GET ALL PATIENTS
+    // ✅ GET ALL
     @GetMapping("/all")
     public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
+        return patientService.getAllPatients();
     }
 
-    // ✅ ADD PATIENT
+    // ✅ ADD
     @PostMapping("/add")
     public Patient addPatient(@RequestBody Patient patient) {
-        return patientRepository.save(patient);
+        return patientService.addPatient(patient);
     }
 
     // ✅ GET BY ID
     @GetMapping("/{id}")
     public Patient getPatient(@PathVariable Long id) {
-        return patientRepository.findById(id).orElse(null);
+        return patientService.getPatientById(id);
+    }
+
+    // ✅ UPDATE
+    @PutMapping("/update/{id}")
+    public Patient updatePatient(@PathVariable Long id,
+                                 @RequestBody Patient patient) {
+        return patientService.updatePatient(id, patient);
     }
 
     // ✅ DELETE
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public String deletePatient(@PathVariable Long id) {
-        patientRepository.deleteById(id);
-        return "Deleted Successfully";
+        return patientService.deletePatient(id);
     }
 }
